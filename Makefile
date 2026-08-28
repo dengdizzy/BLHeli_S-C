@@ -1,8 +1,8 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -pedantic
 
-CORE_SOURCES = core/esc_control.c core/throttle_calibration.c config/blheli_s_config.c
-TEST_SOURCES = tests/test_main.c tests/test_config.c tests/test_throttle_calibration.c tests/test_core_architecture.c tests/test_hal_interface.c tests/test_state_layout.c
+CORE_SOURCES = core/esc_control.c core/throttle_calibration.c core/commutation.c config/blheli_s_config.c hal/phase_mapping.c
+TEST_SOURCES = tests/test_main.c tests/test_config.c tests/test_throttle_calibration.c tests/test_core_architecture.c tests/test_hal_interface.c tests/test_state_layout.c tests/test_commutation.c
 TEST_BINARY = build/blheli_s_core_tests
 
 .PHONY: test check-core clean
