@@ -6,6 +6,7 @@ void test_state_layout(void);
 void test_commutation(void);
 void test_pwm_control(void);
 void test_bemf(void);
+void test_zero_crossing(void);
 
 int main(void)
 {
@@ -17,5 +18,6 @@ int main(void)
     test_commutation();
     test_pwm_control();
     test_bemf();
+    test_zero_crossing();
     return 0;
 }
