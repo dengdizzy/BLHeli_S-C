@@ -5,6 +5,7 @@ void test_hal_interface(void);
 void test_state_layout(void);
 void test_commutation(void);
 void test_pwm_control(void);
+void test_bemf(void);
 
 int main(void)
 {
@@ -15,5 +16,6 @@ int main(void)
     test_state_layout();
     test_commutation();
     test_pwm_control();
+    test_bemf();
     return 0;
 }
