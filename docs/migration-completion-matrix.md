@@ -7,7 +7,7 @@ hardware equivalence.
 | Assembly path | C ownership | Integrated into core control | HAL-connected | Deterministic host evidence | Hardware evidence |
 | --- | --- | --- | --- | --- | --- |
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state initialization only | No | Startup unit tests | No |
-| `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event and phase transitions | No | Core orchestration tests | No |
+| `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | State sequencing only | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Event inputs only | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | No | Model only | Unit tests | No |
@@ -29,6 +29,12 @@ limit and `run6` schedules ADC/protection plus startup, initial-run, stop, and
 direction checks.  The core event API models only the already-migrated
 comparator result, demag status, timeout status, and throttle value after that
 ordered hardware sequence has occurred.
+
+`core/run_control.c` now exposes a deterministic descriptor for the assembly
+`run1` through `run6` path map: the powered phase, PWM phase, comparator phase,
+expected comparator transition, next commutation step, and the special `run2`
+and `run6` side effects.  This is trace metadata only; it does not perform FET,
+PWM, comparator, ADC, timer, interrupt, or protection hardware operations.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
