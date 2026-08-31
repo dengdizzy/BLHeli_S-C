@@ -11,6 +11,7 @@ hardware equivalence.
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
+| Timing advance (`1919-2438`) | `core/timing_control.c` | Host-level commutation period, timing advance, wait calculation, and Timer3 intent model | No | Timing unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
@@ -65,6 +66,14 @@ tracks scan delay, timeout duration, startup/initial-run long timeout scaling,
 startup timeout extension countdown, comparator-read count, and Timer 3 action
 intent for deterministic host tests.  Real Timer 3 reload values, interrupt
 latency, and comparator polling remain platform/HAL work.
+
+`core/timing_control.c` models the `calc_next_comm_timing`,
+`calc_new_wait_times`, fast-path, and `wait_advance_timing` intent at host
+level.  It tracks previous timestamps, startup versus normal period updates,
+high-RPM fast-path selection, demag timing compensation, minimum wait clamping,
+startup wait overrides, and the Timer 3 action that would arm zero-cross scan.
+It does not read Timer 2, write Timer 3 reload registers, or provide hardware
+timing evidence.
 
 `core/throttle_input.c` models host-level input qualification for the
 `int0_int`/`t1_int` path: protocol scaling intent for PPM, OneShot125,
