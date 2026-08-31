@@ -6,7 +6,7 @@ hardware equivalence.
 
 | Assembly path | C ownership | Integrated into core control | HAL-connected | Deterministic host evidence | Hardware evidence |
 | --- | --- | --- | --- | --- | --- |
-| `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state initialization only | No | Startup unit tests | No |
+| `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state, action trace, PWM, and timing initialization models | No | Startup unit tests | No |
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
@@ -18,10 +18,12 @@ hardware equivalence.
 
 `init_start` clears motor state, performs initial ADC/temperature processing,
 calculates startup PWM, selects direction, executes `comm5comm6` then
-`comm6comm1`, initializes virtual timing twice, and enters `STARTUP_PHASE`.
-The portable core currently represents only the state initialization; ADC,
-clock, FET, PWM, comparator, interrupt, and timing actions remain platform/HAL
-work.
+`comm6comm1`, runs `initialize_timing` around the virtual timing calculations,
+and enters `STARTUP_PHASE`.
+The portable core records this as a startup action trace and models
+`set_startup_pwm` plus the `initialize_timing` value of `Comm_Period4x=0xf000`.
+ADC, clock, FET, PWM, comparator, interrupt, and real timer actions remain
+platform/HAL work.
 
 Each `runN` performs comparator qualification, `wait_for_comm`, the matching
 commutation operation, and timing calculation.  `run2` adjusts the RPM power
