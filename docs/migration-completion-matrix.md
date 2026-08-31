@@ -9,7 +9,7 @@ hardware equivalence.
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state initialization only | No | Startup unit tests | No |
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
-| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait model and event inputs | Interface/model only | Unit/trace tests | No |
+| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | No | Interface/model only | Decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
@@ -55,6 +55,13 @@ model records expected polarity, direction-change brake inversion, startup and
 high-RPM sample counts, timeout input, and demag flag state for host tests.
 Timer 3 scheduling, comparator register reads, and hardware polling latency
 remain HAL/platform work.
+
+`core/zero_crossing.c` models the `wait_before_zc_scan` and
+`setup_zc_scan_timeout` deadline state without touching Timer 3 registers.  It
+tracks scan delay, timeout duration, startup/initial-run long timeout scaling,
+startup timeout extension countdown, comparator-read count, and Timer 3 action
+intent for deterministic host tests.  Real Timer 3 reload values, interrupt
+latency, and comparator polling remain platform/HAL work.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
