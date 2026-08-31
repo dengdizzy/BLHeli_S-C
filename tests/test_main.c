@@ -15,6 +15,7 @@ void test_demag(void);
 void test_brake(void);
 void test_protection(void);
 void test_storage(void);
+void test_dshot_decoder(void);
 
 int main(void)
 {
@@ -35,5 +36,6 @@ int main(void)
     test_brake();
     test_protection();
     test_storage();
+    test_dshot_decoder();
     return 0;
 }
