@@ -1,0 +1,11 @@
+sequence,event,input,state_before,output,state_after,tick
+1,gate_change,step_1,forward,step_2,forward,UNKNOWN
+2,gate_change,step_2,forward,step_3,forward,UNKNOWN
+3,gate_change,step_3,forward,step_4,forward,UNKNOWN
+4,gate_change,step_4,forward,step_5,forward,UNKNOWN
+5,gate_change,step_5,forward,step_6,forward,UNKNOWN
+6,gate_change,step_6,forward,step_1,forward,UNKNOWN
+7,input,dshot_1000,frame,throttle_1000,valid,UNKNOWN
+8,deadline,period_400_timing_3,stopped,commutation_200,scan_100,UNKNOWN
+9,fault,temperature_157_limit_150,normal,pwm_limit_128,limited,UNKNOWN
+10,fault,period_300_high_rpm,normal,pwm_limit_0,limited,UNKNOWN
