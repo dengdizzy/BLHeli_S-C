@@ -16,6 +16,7 @@ void test_brake(void);
 void test_protection(void);
 void test_storage(void);
 void test_dshot_decoder(void);
+void test_silabs_platform(void);
 
 int main(void)
 {
@@ -37,5 +38,6 @@ int main(void)
     test_protection();
     test_storage();
     test_dshot_decoder();
+    test_silabs_platform();
     return 0;
 }
