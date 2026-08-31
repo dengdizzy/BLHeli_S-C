@@ -9,7 +9,7 @@ hardware equivalence.
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state initialization only | No | Startup unit tests | No |
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
-| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Event inputs only | Interface/model only | Unit/trace tests | No |
+| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait model and event inputs | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | No | Interface/model only | Decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
@@ -48,6 +48,13 @@ the deferred transfer performed by `pca_int`.  The host model tracks pending and
 current PWM state, the current power compare high byte, FETON_DELAY zero versus
 non-zero behavior, and the PCA counter high-byte windows that gate transfers.
 It does not write PCA registers or provide hardware timing evidence.
+
+`core/bemf.c` models the `wait_for_comp_out_low` and
+`wait_for_comp_out_high` comparator expectations without reading hardware.  The
+model records expected polarity, direction-change brake inversion, startup and
+high-RPM sample counts, timeout input, and demag flag state for host tests.
+Timer 3 scheduling, comparator register reads, and hardware polling latency
+remain HAL/platform work.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
