@@ -16,7 +16,8 @@ hardware equivalence.
 | Temperature/power protection (`1758-1868`) | `core/protection.c` | Host-level ADC cadence, temperature average, PWM temperature limit, and PWM recovery intent model | No | Protection unit tests | No |
 | Input interrupts and DShot commands (`int0_int`, `int1_int`, `t1_int`, `3988-4267`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, DShot frame decode, command latch, repeat count, and command execution intents | Interface/model only | Throttle input, decoder, and command tests | No |
 | Parameters and settings (`3029-3338`) | `config/blheli_s_config.c`, `storage/blheli_s_storage.c` | Host-level parameter offsets, defaults, signature checks, record encode/decode, and `decode_settings` derived fields | No | Config and storage tests | No |
-| TX programming and bootloader | No complete C equivalent | No | No | No | No |
+| TX programming (`3430-3467`, `3780-3903`) | `communication/tx_programming.c` | Host-level arming gate, throttle averaging, calibration write, min/max gap, and EEPROM-save intent model | No | TX programming tests | No |
+| Bootloader | No complete C equivalent | No | No | No | No |
 
 ## `init_start` / `run1`–`run6` path map
 
@@ -121,6 +122,15 @@ direction flags, decoded startup power, low-RPM power slope, demag power-off
 threshold, temperature protection limit, and the switch-power-off intent at the
 end of settings decode.  Governor, BEC, PWM-frequency, dither, TX programming
 writes, flash/EEPROM HAL behavior, and bootloader behavior remain unmodeled.
+
+`communication/tx_programming.c` models the TX programming entry gate and
+throttle calibration intent from the arming path.  It records DShot,
+bidirectional, enable-setting, and initial-arm gates; full-range gain window
+intents; high/low throttle hold decisions; 16-sample throttle averaging;
+max/min throttle update intents; the 35-count minimum calibration gap; flash key
+and EEPROM-save intents; and beep/wait trace actions.  It does not implement the
+full TX programming menu, read live input capture hardware, drive a beeper, or
+write flash/EEPROM hardware.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
