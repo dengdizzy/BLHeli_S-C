@@ -10,7 +10,7 @@ hardware equivalence.
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Event inputs only | Interface/model only | Unit/trace tests | No |
-| PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | No | Model only | Unit tests | No |
+| PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | No | Interface/model only | Decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
@@ -42,6 +42,12 @@ interrupt mask, FET-off, FET/PWM reapplication, interrupt restore, and
 comparator phase selection.  Reverse paths are present in the assembly, but the
 portable action-trace API currently fails closed for reverse direction until the
 reverse table is separately reviewed against the hardware variant macros.
+
+`core/pwm_control.c` models the PWM register values staged by the input path and
+the deferred transfer performed by `pca_int`.  The host model tracks pending and
+current PWM state, the current power compare high byte, FETON_DELAY zero versus
+non-zero behavior, and the PCA counter high-byte windows that gate transfers.
+It does not write PCA registers or provide hardware timing evidence.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
