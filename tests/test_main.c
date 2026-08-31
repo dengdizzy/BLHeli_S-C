@@ -10,6 +10,7 @@ void test_zero_crossing(void);
 void test_startup(void);
 void test_run_control(void);
 void test_throttle_input(void);
+void test_timing_control(void);
 
 int main(void)
 {
@@ -25,5 +26,6 @@ int main(void)
     test_startup();
     test_run_control();
     test_throttle_input();
+    test_timing_control();
     return 0;
 }
