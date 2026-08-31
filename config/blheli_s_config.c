@@ -23,10 +23,24 @@ bool blheli_s_decode_config(const struct blheli_s_config *config,
     uint8_t temperature_limit;
 
     if (config->startup_power == 0u ||
-        config->startup_power > sizeof(startup_power_table)) {
+        config->startup_power > sizeof(startup_power_table) ||
+        config->direction < BLHELI_S_DIRECTION_NORMAL ||
+        config->direction > BLHELI_S_DIRECTION_BIDIRECTIONAL_REVERSED ||
+        config->demag_compensation < BLHELI_S_DEMAG_DISABLED ||
+        config->demag_compensation > BLHELI_S_DEMAG_HIGH ||
+        config->temperature_protection > 7u) {
         return false;
     }
 
+    *decoded = (struct blheli_s_decoded_config){
+        .decoded_direction_flags = true,
+        .decoded_startup_power = true,
+        .decoded_low_rpm_power_slope = true,
+        .decoded_demag_threshold = true,
+        .decoded_temperature_limit = true,
+        .switch_power_off_intent = true,
+        .unknown_fields_preserved = true
+    };
     decoded->bidirectional = config->direction >= BLHELI_S_DIRECTION_BIDIRECTIONAL;
     decoded->direction_reversed = (config->direction & 2u) != 0u;
     decoded->bidirectional_reversed = decoded->direction_reversed;
@@ -41,9 +55,12 @@ bool blheli_s_decode_config(const struct blheli_s_config *config,
         decoded->demag_power_off_threshold = 130u;
     }
 
-    temperature_limit = 49u - 9u;
-    for (uint8_t step = config->temperature_protection; step != 0u; --step) {
-        temperature_limit = (uint8_t)(temperature_limit + 9u);
+    temperature_limit = 0u;
+    if (config->temperature_protection != 0u) {
+        temperature_limit = 49u - 9u;
+        for (uint8_t step = config->temperature_protection; step != 0u; --step) {
+            temperature_limit = (uint8_t)(temperature_limit + 9u);
+        }
     }
     decoded->temperature_protection_limit = temperature_limit;
     return true;

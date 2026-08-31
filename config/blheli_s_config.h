@@ -39,6 +39,13 @@ struct blheli_s_decoded_config {
     bool bidirectional;
     bool direction_reversed;
     bool bidirectional_reversed;
+    bool decoded_direction_flags;
+    bool decoded_startup_power;
+    bool decoded_low_rpm_power_slope;
+    bool decoded_demag_threshold;
+    bool decoded_temperature_limit;
+    bool switch_power_off_intent;
+    bool unknown_fields_preserved;
     uint8_t startup_power_decoded;
     uint8_t low_rpm_power_slope;
     uint8_t demag_power_off_threshold;

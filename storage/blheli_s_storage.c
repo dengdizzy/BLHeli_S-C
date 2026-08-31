@@ -1,14 +1,15 @@
 #include "storage/blheli_s_storage.h"
 
-#include "storage/parameter_layout.h"
-
 bool blheli_s_storage_header_valid(
     const uint8_t *record, size_t size)
 {
     return size >= BLHELI_S_PARAMETER_RECORD_SIZE &&
-           record[2] == BLHELI_S_PARAMETER_LAYOUT_REVISION &&
-           record[13] == BLHELI_S_PARAMETER_SIGNATURE_LOW &&
-           record[14] == BLHELI_S_PARAMETER_SIGNATURE_HIGH;
+           record[BLHELI_S_PARAMETER_OFFSET_LAYOUT_REVISION] ==
+               BLHELI_S_PARAMETER_LAYOUT_REVISION &&
+           record[BLHELI_S_PARAMETER_OFFSET_SIGNATURE_LOW] ==
+               BLHELI_S_PARAMETER_SIGNATURE_LOW &&
+           record[BLHELI_S_PARAMETER_OFFSET_SIGNATURE_HIGH] ==
+               BLHELI_S_PARAMETER_SIGNATURE_HIGH;
 }
 
 bool blheli_s_storage_encode(
@@ -17,36 +18,39 @@ bool blheli_s_storage_encode(
     if (size < BLHELI_S_PARAMETER_RECORD_SIZE) {
         return false;
     }
-    record[0] = 16u;
-    record[1] = 7u;
-    record[2] = BLHELI_S_PARAMETER_LAYOUT_REVISION;
-    record[3] = record[4] = record[5] = record[6] = record[7] = 0xffu;
-    record[8] = config->startup_power;
-    record[9] = 0xffu;
-    record[10] = config->direction;
-    record[11] = record[12] = 0xffu;
-    record[13] = BLHELI_S_PARAMETER_SIGNATURE_LOW;
-    record[14] = BLHELI_S_PARAMETER_SIGNATURE_HIGH;
-    record[15] = config->enable_tx_programming;
-    record[16] = record[17] = record[18] = record[19] = record[20] = 0xffu;
-    record[21] = config->commutation_timing;
-    record[22] = record[23] = record[24] = 0xffu;
-    record[25] = config->min_throttle;
-    record[26] = config->max_throttle;
-    record[27] = config->beep_strength;
-    record[28] = config->beacon_strength;
-    record[29] = config->beacon_delay;
-    record[30] = 0xffu;
-    record[31] = config->demag_compensation;
-    record[32] = 0xffu;
-    record[33] = config->center_throttle;
-    record[34] = 0xffu;
-    record[35] = config->temperature_protection;
-    record[36] = config->power_protection;
-    record[37] = record[38] = 0xffu;
-    record[39] = config->brake_on_stop;
-    record[40] = config->led_control;
-    record[41] = 0xffu;
+    for (size_t i = 0u; i < BLHELI_S_PARAMETER_RECORD_SIZE; ++i) {
+        record[i] = BLHELI_S_PARAMETER_PLACEHOLDER;
+    }
+    record[BLHELI_S_PARAMETER_OFFSET_FW_MAIN] = 16u;
+    record[BLHELI_S_PARAMETER_OFFSET_FW_SUB] = 7u;
+    record[BLHELI_S_PARAMETER_OFFSET_LAYOUT_REVISION] =
+        BLHELI_S_PARAMETER_LAYOUT_REVISION;
+    record[BLHELI_S_PARAMETER_OFFSET_STARTUP_POWER] = config->startup_power;
+    record[BLHELI_S_PARAMETER_OFFSET_DIRECTION] = config->direction;
+    record[BLHELI_S_PARAMETER_OFFSET_SIGNATURE_LOW] =
+        BLHELI_S_PARAMETER_SIGNATURE_LOW;
+    record[BLHELI_S_PARAMETER_OFFSET_SIGNATURE_HIGH] =
+        BLHELI_S_PARAMETER_SIGNATURE_HIGH;
+    record[BLHELI_S_PARAMETER_OFFSET_ENABLE_TX_PROGRAMMING] =
+        config->enable_tx_programming;
+    record[BLHELI_S_PARAMETER_OFFSET_COMMUTATION_TIMING] =
+        config->commutation_timing;
+    record[BLHELI_S_PARAMETER_OFFSET_MIN_THROTTLE] = config->min_throttle;
+    record[BLHELI_S_PARAMETER_OFFSET_MAX_THROTTLE] = config->max_throttle;
+    record[BLHELI_S_PARAMETER_OFFSET_BEEP_STRENGTH] = config->beep_strength;
+    record[BLHELI_S_PARAMETER_OFFSET_BEACON_STRENGTH] =
+        config->beacon_strength;
+    record[BLHELI_S_PARAMETER_OFFSET_BEACON_DELAY] = config->beacon_delay;
+    record[BLHELI_S_PARAMETER_OFFSET_DEMAG_COMPENSATION] =
+        config->demag_compensation;
+    record[BLHELI_S_PARAMETER_OFFSET_CENTER_THROTTLE] =
+        config->center_throttle;
+    record[BLHELI_S_PARAMETER_OFFSET_TEMPERATURE_PROTECTION] =
+        config->temperature_protection;
+    record[BLHELI_S_PARAMETER_OFFSET_POWER_PROTECTION] =
+        config->power_protection;
+    record[BLHELI_S_PARAMETER_OFFSET_BRAKE_ON_STOP] = config->brake_on_stop;
+    record[BLHELI_S_PARAMETER_OFFSET_LED_CONTROL] = config->led_control;
     for (size_t i = 0u; i < BLHELI_S_PARAMETER_NAME_LENGTH; ++i) {
         record[BLHELI_S_PARAMETER_NAME_OFFSET + i] = ' ';
     }
@@ -60,9 +64,21 @@ bool blheli_s_storage_decode(
         return false;
     }
     *config = (struct blheli_s_config){
-        record[8], record[10], record[21], record[25], record[26],
-        record[33], record[27], record[28], record[29], record[31],
-        record[35], record[36], record[39], record[40], record[15]
+        record[BLHELI_S_PARAMETER_OFFSET_STARTUP_POWER],
+        record[BLHELI_S_PARAMETER_OFFSET_DIRECTION],
+        record[BLHELI_S_PARAMETER_OFFSET_COMMUTATION_TIMING],
+        record[BLHELI_S_PARAMETER_OFFSET_MIN_THROTTLE],
+        record[BLHELI_S_PARAMETER_OFFSET_MAX_THROTTLE],
+        record[BLHELI_S_PARAMETER_OFFSET_CENTER_THROTTLE],
+        record[BLHELI_S_PARAMETER_OFFSET_BEEP_STRENGTH],
+        record[BLHELI_S_PARAMETER_OFFSET_BEACON_STRENGTH],
+        record[BLHELI_S_PARAMETER_OFFSET_BEACON_DELAY],
+        record[BLHELI_S_PARAMETER_OFFSET_DEMAG_COMPENSATION],
+        record[BLHELI_S_PARAMETER_OFFSET_TEMPERATURE_PROTECTION],
+        record[BLHELI_S_PARAMETER_OFFSET_POWER_PROTECTION],
+        record[BLHELI_S_PARAMETER_OFFSET_BRAKE_ON_STOP],
+        record[BLHELI_S_PARAMETER_OFFSET_LED_CONTROL],
+        record[BLHELI_S_PARAMETER_OFFSET_ENABLE_TX_PROGRAMMING]
     };
     return true;
 }

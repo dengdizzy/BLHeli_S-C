@@ -6,9 +6,7 @@
 #include <stdint.h>
 
 #include "config/blheli_s_config.h"
-
-#define BLHELI_S_PARAMETER_RECORD_SIZE 58u
-#define BLHELI_S_PARAMETER_NAME_OFFSET 42u
+#include "storage/parameter_layout.h"
 
 bool blheli_s_storage_header_valid(
     const uint8_t *record, size_t size);

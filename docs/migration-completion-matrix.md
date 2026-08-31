@@ -15,6 +15,7 @@ hardware equivalence.
 | Brake and stop (`3012-3016`, `4481-4574`) | `core/brake.c` | Host-level stop brake, direction-change brake, switch-power-off, and brake-on-stop intent model | No | Brake unit tests | No |
 | Temperature/power protection (`1758-1868`) | `core/protection.c` | Host-level ADC cadence, temperature average, PWM temperature limit, and PWM recovery intent model | No | Protection unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
+| Parameters and settings (`3029-3338`) | `config/blheli_s_config.c`, `storage/blheli_s_storage.c` | Host-level parameter offsets, defaults, signature checks, record encode/decode, and `decode_settings` derived fields | No | Config and storage tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
 ## `init_start` / `run1`–`run6` path map
@@ -103,6 +104,15 @@ complete wait/read/stop/reset intents, temperature-average update, temperature
 PWM limit steps, and the non-temperature-path `Pwm_Limit += 16` recovery with
 saturation.  It does not read real ADC hardware, start or stop an ADC
 peripheral, or provide voltage/power hardware evidence.
+
+`storage/parameter_layout.h` and `storage/blheli_s_storage.c` model the
+currently used EEPROM parameter record offsets, layout revision, signatures,
+reserved placeholder bytes, and blank name field.  `config/blheli_s_config.c`
+models default settings and the host-visible `decode_settings` derived fields:
+direction flags, decoded startup power, low-RPM power slope, demag power-off
+threshold, temperature protection limit, and the switch-power-off intent at the
+end of settings decode.  Governor, BEC, PWM-frequency, dither, TX programming
+writes, flash/EEPROM HAL behavior, and bootloader behavior remain unmodeled.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
