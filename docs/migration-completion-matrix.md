@@ -12,6 +12,7 @@ hardware equivalence.
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait, zero-crossing deadline, demag metric, timeout extension, and power-cut intent models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Timing advance (`1919-2438`) | `core/timing_control.c` | Host-level commutation period, timing advance, wait calculation, and Timer3 intent model | No | Timing unit tests | No |
+| Brake and stop (`3012-3016`, `4481-4574`) | `core/brake.c` | Host-level stop brake, direction-change brake, switch-power-off, and brake-on-stop intent model | No | Brake unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
@@ -87,6 +88,12 @@ OneShot42, MultiShot, and DShot frame-level input, 900us/2235us range checks,
 outside-range count, stop count, timeout countdown, bidirectional deadband and
 direction state, and startup boost intent.  It does not install interrupt
 vectors, read timer capture registers, or model DShot edge-buffer timing.
+
+`core/brake.c` models the `run6` stop and direction-change brake decisions plus
+the `switch_power_off` action order.  It records stop thresholds, RC timeout
+stop intent, direction-change brake start and completion, initial-run restart
+count, PWM limit restore intent, all-FET-off ordering, and brake-on-stop
+all-comFET-on intent.  It does not switch real FETs or write PWM hardware.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
