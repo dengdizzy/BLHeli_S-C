@@ -8,7 +8,7 @@ hardware equivalence.
 | --- | --- | --- | --- | --- | --- |
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state initialization only | No | Startup unit tests | No |
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
-| Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | State sequencing only | Mapping only | Table/trace tests | No |
+| Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Event inputs only | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | No | Model only | Unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | No | Interface/model only | Decoder tests | No |
@@ -35,6 +35,13 @@ ordered hardware sequence has occurred.
 expected comparator transition, next commutation step, and the special `run2`
 and `run6` side effects.  This is trace metadata only; it does not perform FET,
 PWM, comparator, ADC, timer, interrupt, or protection hardware operations.
+
+`core/commutation.c` exposes a forward-only action trace for `comm1comm2`
+through `comm6comm1`, preserving the observed order of RPM output update,
+interrupt mask, FET-off, FET/PWM reapplication, interrupt restore, and
+comparator phase selection.  Reverse paths are present in the assembly, but the
+portable action-trace API currently fails closed for reverse direction until the
+reverse table is separately reviewed against the hardware variant macros.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
