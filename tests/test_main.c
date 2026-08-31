@@ -12,6 +12,7 @@ void test_run_control(void);
 void test_throttle_input(void);
 void test_timing_control(void);
 void test_demag(void);
+void test_brake(void);
 
 int main(void)
 {
@@ -29,5 +30,6 @@ int main(void)
     test_throttle_input();
     test_timing_control();
     test_demag();
+    test_brake();
     return 0;
 }
