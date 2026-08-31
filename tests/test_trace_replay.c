@@ -5,6 +5,7 @@
 #include "communication/dshot_decoder.h"
 #include "core/commutation.h"
 #include "core/protection.h"
+#include "core/run_control.h"
 #include "core/timing_control.h"
 
 static uint16_t dshot_frame(uint16_t throttle)
@@ -24,10 +25,17 @@ void test_trace_replay(void)
         BLHELI_S_COMMUTATION_STEP_1
     };
     struct blheli_s_dshot_packet packet;
+    struct blheli_s_run_action_trace run_trace;
     struct blheli_s_timing_waits waits;
     enum blheli_s_commutation_step step = sequence[0];
 
     for (size_t i = 1u; i < sizeof(sequence) / sizeof(sequence[0]); ++i) {
+        assert(blheli_s_run_build_action_trace(step, &run_trace));
+        assert(run_trace.next_step == sequence[i]);
+        assert(run_trace.actions[run_trace.action_count - 1u].kind ==
+               (step == BLHELI_S_COMMUTATION_STEP_6
+                    ? BLHELI_S_RUN_ACTION_RUN6_STOP_TIMEOUT_DIRECTION_CHECKS
+                    : BLHELI_S_RUN_ACTION_CALCULATE_NEXT_COMMUTATION_TIMING));
         step = blheli_s_commutation_next_step(step);
         assert(step == sequence[i]);
     }

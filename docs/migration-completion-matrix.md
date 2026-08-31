@@ -7,7 +7,7 @@ hardware equivalence.
 | Assembly path | C ownership | Integrated into core control | HAL-connected | Deterministic host evidence | Hardware evidence |
 | --- | --- | --- | --- | --- | --- |
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state, action trace, PWM, and timing initialization models | No | Startup unit tests | No |
-| `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, and run-step descriptor | No | Core orchestration and run-step descriptor tests | No |
+| `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, run-step descriptor, and ordered closed-loop trace | No | Core orchestration, run-step descriptor, and trace tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
@@ -32,11 +32,12 @@ direction checks.  The core event API models only the already-migrated
 comparator result, demag status, timeout status, and throttle value after that
 ordered hardware sequence has occurred.
 
-`core/run_control.c` now exposes a deterministic descriptor for the assembly
-`run1` through `run6` path map: the powered phase, PWM phase, comparator phase,
-expected comparator transition, next commutation step, and the special `run2`
-and `run6` side effects.  This is trace metadata only; it does not perform FET,
-PWM, comparator, ADC, timer, interrupt, or protection hardware operations.
+`core/run_control.c` now exposes deterministic descriptors and ordered host
+traces for the assembly `run1` through `run6` path map: zero-cross scan intent,
+comparator wait direction, comparator-integrity evaluation, commutation wait,
+the commutation transition, next timing calculation, and the special `run2` and
+`run6` side-effect intents.  This is trace metadata only; it does not perform
+FET, PWM, comparator, ADC, timer, interrupt, or protection hardware operations.
 
 `core/commutation.c` exposes a forward-only action trace for `comm1comm2`
 through `comm6comm1`, preserving the observed order of RPM output update,
