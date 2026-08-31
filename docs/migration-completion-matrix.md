@@ -11,7 +11,7 @@ hardware equivalence.
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
 | Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
-| Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | No | Interface/model only | Decoder tests | No |
+| Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
 ## `init_start` / `run1`–`run6` path map
@@ -65,6 +65,13 @@ tracks scan delay, timeout duration, startup/initial-run long timeout scaling,
 startup timeout extension countdown, comparator-read count, and Timer 3 action
 intent for deterministic host tests.  Real Timer 3 reload values, interrupt
 latency, and comparator polling remain platform/HAL work.
+
+`core/throttle_input.c` models host-level input qualification for the
+`int0_int`/`t1_int` path: protocol scaling intent for PPM, OneShot125,
+OneShot42, MultiShot, and DShot frame-level input, 900us/2235us range checks,
+outside-range count, stop count, timeout countdown, bidirectional deadband and
+direction state, and startup boost intent.  It does not install interrupt
+vectors, read timer capture registers, or model DShot edge-buffer timing.
 
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
