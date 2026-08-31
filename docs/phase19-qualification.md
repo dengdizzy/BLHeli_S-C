@@ -32,3 +32,8 @@ make phase19-check
 
 This gate does not delete, rename, or modify the legacy sources. Removal must
 be performed as separate, explicitly reviewed commits after the gate passes.
+
+When the project maintainer has accepted the required real-target, timing,
+hardware, behavioral, and compatibility evidence, the repository provides
+`make phase19-qualified` as the explicit readiness step. It still preserves
+the legacy source tree; any removal remains a separate reviewed change.
