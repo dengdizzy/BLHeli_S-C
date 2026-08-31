@@ -7,6 +7,7 @@ void test_commutation(void);
 void test_pwm_control(void);
 void test_bemf(void);
 void test_zero_crossing(void);
+void test_startup(void);
 
 int main(void)
 {
@@ -19,5 +20,6 @@ int main(void)
     test_pwm_control();
     test_bemf();
     test_zero_crossing();
+    test_startup();
     return 0;
 }
