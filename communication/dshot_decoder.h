@@ -9,6 +9,7 @@ struct blheli_s_dshot_packet {
     uint8_t command;
     bool telemetry;
     bool is_command;
+    bool special_command_range;
 };
 
 bool blheli_s_dshot_decode(uint16_t frame,

@@ -1,7 +1,7 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -pedantic
 
-CORE_SOURCES = core/esc_control.c core/throttle_calibration.c core/throttle_input.c core/commutation.c core/pwm_control.c core/bemf.c core/zero_crossing.c core/startup.c core/run_control.c core/timing_control.c core/demag.c core/brake.c core/protection.c config/blheli_s_config.c hal/phase_mapping.c storage/blheli_s_storage.c communication/dshot_decoder.c platform/silabs_efm8/esc_hal.c platform/silabs_efm8/timers.c platform/silabs_efm8/pwm.c platform/silabs_efm8/comparator.c platform/silabs_efm8/adc.c
+CORE_SOURCES = core/esc_control.c core/throttle_calibration.c core/throttle_input.c core/commutation.c core/pwm_control.c core/bemf.c core/zero_crossing.c core/startup.c core/run_control.c core/timing_control.c core/demag.c core/brake.c core/protection.c config/blheli_s_config.c hal/phase_mapping.c storage/blheli_s_storage.c communication/dshot_decoder.c communication/dshot_commands.c platform/silabs_efm8/esc_hal.c platform/silabs_efm8/timers.c platform/silabs_efm8/pwm.c platform/silabs_efm8/comparator.c platform/silabs_efm8/adc.c
 TEST_SOURCES = tests/test_main.c tests/test_config.c tests/test_throttle_calibration.c tests/test_throttle_input.c tests/test_core_architecture.c tests/test_hal_interface.c tests/test_state_layout.c tests/test_commutation.c tests/test_pwm_control.c tests/test_bemf.c tests/test_zero_crossing.c tests/test_startup.c tests/test_run_control.c tests/test_timing_control.c tests/test_demag.c tests/test_brake.c tests/test_protection.c tests/test_storage.c tests/test_dshot_decoder.c tests/test_silabs_platform.c tests/test_trace_replay.c
 TEST_BINARY = build/blheli_s_core_tests
 

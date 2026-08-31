@@ -14,8 +14,9 @@ bool blheli_s_dshot_decode(uint16_t frame,
     }
     throttle = (uint16_t)((frame >> 5) & 0x07ffu);
     packet->telemetry = (frame & 0x10u) != 0u;
-    packet->is_command = throttle < 48u && throttle != 0u;
+    packet->special_command_range = throttle < 48u && throttle != 0u;
+    packet->is_command = packet->special_command_range && packet->telemetry;
     packet->command = packet->is_command ? (uint8_t)(throttle / 2u) : 0u;
-    packet->throttle = packet->is_command ? 0u : throttle;
+    packet->throttle = packet->special_command_range ? 0u : throttle;
     return true;
 }

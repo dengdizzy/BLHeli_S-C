@@ -14,7 +14,7 @@ hardware equivalence.
 | Timing advance (`1919-2438`) | `core/timing_control.c` | Host-level commutation period, timing advance, wait calculation, and Timer3 intent model | No | Timing unit tests | No |
 | Brake and stop (`3012-3016`, `4481-4574`) | `core/brake.c` | Host-level stop brake, direction-change brake, switch-power-off, and brake-on-stop intent model | No | Brake unit tests | No |
 | Temperature/power protection (`1758-1868`) | `core/protection.c` | Host-level ADC cadence, temperature average, PWM temperature limit, and PWM recovery intent model | No | Protection unit tests | No |
-| Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
+| Input interrupts and DShot commands (`int0_int`, `int1_int`, `t1_int`, `3988-4267`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, DShot frame decode, command latch, repeat count, and command execution intents | Interface/model only | Throttle input, decoder, and command tests | No |
 | Parameters and settings (`3029-3338`) | `config/blheli_s_config.c`, `storage/blheli_s_storage.c` | Host-level parameter offsets, defaults, signature checks, record encode/decode, and `decode_settings` derived fields | No | Config and storage tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
@@ -90,6 +90,14 @@ OneShot42, MultiShot, and DShot frame-level input, 900us/2235us range checks,
 outside-range count, stop count, timeout countdown, bidirectional deadband and
 direction state, and startup boost intent.  It does not install interrupt
 vectors, read timer capture registers, or model DShot edge-buffer timing.
+
+`communication/dshot_decoder.c` validates the DShot checksum and separates
+normal throttle values from the special command range.  The command model
+records the telemetry-bit gate, latched command, repeat count, beep intents,
+direction-change intents, temporary direction intents, save-settings intent,
+and clear versus don't-clear command behavior.  It does not execute real
+beeper, FET, flash, EEPROM, TX programming, bootloader, or DShot edge-timing
+hardware operations.
 
 `core/brake.c` models the `run6` stop and direction-change brake decisions plus
 the `switch_power_off` action order.  It records stop thresholds, RC timeout
