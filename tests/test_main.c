@@ -14,6 +14,7 @@ void test_timing_control(void);
 void test_demag(void);
 void test_brake(void);
 void test_protection(void);
+void test_storage(void);
 
 int main(void)
 {
@@ -33,5 +34,6 @@ int main(void)
     test_demag();
     test_brake();
     test_protection();
+    test_storage();
     return 0;
 }
