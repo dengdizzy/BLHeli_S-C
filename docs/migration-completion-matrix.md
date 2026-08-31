@@ -13,6 +13,7 @@ hardware equivalence.
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Timing advance (`1919-2438`) | `core/timing_control.c` | Host-level commutation period, timing advance, wait calculation, and Timer3 intent model | No | Timing unit tests | No |
 | Brake and stop (`3012-3016`, `4481-4574`) | `core/brake.c` | Host-level stop brake, direction-change brake, switch-power-off, and brake-on-stop intent model | No | Brake unit tests | No |
+| Temperature/power protection (`1758-1868`) | `core/protection.c` | Host-level ADC cadence, temperature average, PWM temperature limit, and PWM recovery intent model | No | Protection unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
 | TX programming and bootloader | No complete C equivalent | No | No | No | No |
 
@@ -95,12 +96,20 @@ stop intent, direction-change brake start and completion, initial-run restart
 count, PWM limit restore intent, all-FET-off ordering, and brake-on-stop
 all-comFET-on intent.  It does not switch real FETs or write PWM hardware.
 
+`core/protection.c` models the `start_adc_conversion` intent and the
+`check_temp_voltage_and_limit_power` host-level cadence.  It records ADC
+conversion-count increments, the every-eighth-call temperature path, ADC
+complete wait/read/stop/reset intents, temperature-average update, temperature
+PWM limit steps, and the non-temperature-path `Pwm_Limit += 16` recovery with
+saturation.  It does not read real ADC hardware, start or stop an ADC
+peripheral, or provide voltage/power hardware evidence.
+
 The assembly increments `Startup_Cnt` during comparator integrity evaluation.
 At 24 it enters initial run and initializes the rotation count to 12; the same
 `run6` pass then decrements that count.  The core preserves that observable
 transition.  Completion of each six-step cycle is identified when the portable
 run state returns to step 1.
 
-`check_temp_voltage_and_limit_power` remains **UNKNOWN**: its selected ADC
-source is temperature, so no voltage-protection behavior has been inferred or
-added.
+`check_temp_voltage_and_limit_power` voltage behavior remains **UNKNOWN** beyond
+the observed host-level `Pwm_Limit` recovery increment; no voltage-protection
+ADC threshold or hardware behavior has been inferred or added.
