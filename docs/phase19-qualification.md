@@ -3,6 +3,10 @@
 Phase 19 is conditional. The legacy implementation remains the behavioral
 oracle and is not removed by the normal build or test targets.
 
+The root default build is portable C only. The preserved legacy build is
+available explicitly with `make legacy-reference-build` and is never invoked
+by `make`, `make test`, or `make phase19-check`.
+
 Run `make phase19-check` only after the following evidence has been completed
 and recorded by the project maintainer:
 
