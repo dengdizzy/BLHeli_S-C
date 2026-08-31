@@ -4,6 +4,7 @@ void test_core_architecture(void);
 void test_hal_interface(void);
 void test_state_layout(void);
 void test_commutation(void);
+void test_pwm_control(void);
 
 int main(void)
 {
@@ -13,5 +14,6 @@ int main(void)
     test_hal_interface();
     test_state_layout();
     test_commutation();
+    test_pwm_control();
     return 0;
 }
