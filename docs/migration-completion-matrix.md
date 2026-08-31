@@ -9,7 +9,7 @@ hardware equivalence.
 | `init_start` (`BLHeli_S.asm:4274-4326`) | `core/esc_control.c`, `core/startup.c` | Startup state, action trace, PWM, and timing initialization models | No | Startup unit tests | No |
 | `run1`–`run6` (`4336-4544`) | `core/esc_control.c`, `core/run_control.c` | Per-run event, phase transitions, run-step descriptor, and ordered closed-loop trace | No | Core orchestration, run-step descriptor, and trace tests | No |
 | Commutation (`2787-2924`) | `core/commutation.c`, `hal/phase_mapping.c` | Forward action trace and state sequencing | Mapping only | Table/trace tests | No |
-| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait and zero-crossing deadline models | Interface/model only | Unit/trace tests | No |
+| Comparator/BEMF and demag (`2434-2775`) | `core/bemf.c`, `core/zero_crossing.c`, `core/demag.c` | Comparator wait, zero-crossing deadline, demag metric, timeout extension, and power-cut intent models | Interface/model only | Unit/trace tests | No |
 | PCA PWM transfer (`pca_int`) | `core/pwm_control.c`, platform PWM model | Deferred-transfer model only | Model only | Unit tests for pending/current state and PCA update windows | No |
 | Timing advance (`1919-2438`) | `core/timing_control.c` | Host-level commutation period, timing advance, wait calculation, and Timer3 intent model | No | Timing unit tests | No |
 | Input interrupts (`int0_int`, `int1_int`, `t1_int`) | throttle and DShot modules | Host-level throttle qualification, scaling, counters, and DShot frame decode | Interface/model only | Throttle input and decoder tests | No |
@@ -59,6 +59,12 @@ model records expected polarity, direction-change brake inversion, startup and
 high-RPM sample counts, timeout input, and demag flag state for host tests.
 Timer 3 scheduling, comparator register reads, and hardware polling latency
 remain HAL/platform work.
+
+`core/demag.c` models the `wait_for_comm` demag metric update, threshold-based
+power cut intent, comparator wrong-read timeout extension intent, high-RPM
+versus low-RPM extension reload intent, startup/initial-run demag suppression,
+and the need to reapply power on a later commutation.  It does not write Timer 3
+reload registers or switch PWM/FET hardware.
 
 `core/zero_crossing.c` models the `wait_before_zc_scan` and
 `setup_zc_scan_timeout` deadline state without touching Timer 3 registers.  It
