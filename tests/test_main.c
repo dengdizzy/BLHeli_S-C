@@ -8,6 +8,7 @@ void test_pwm_control(void);
 void test_bemf(void);
 void test_zero_crossing(void);
 void test_startup(void);
+void test_run_control(void);
 
 int main(void)
 {
@@ -21,5 +22,6 @@ int main(void)
     test_bemf();
     test_zero_crossing();
     test_startup();
+    test_run_control();
     return 0;
 }
