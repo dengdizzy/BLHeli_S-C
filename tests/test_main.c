@@ -17,6 +17,7 @@ void test_protection(void);
 void test_storage(void);
 void test_dshot_decoder(void);
 void test_silabs_platform(void);
+void test_trace_replay(void);
 
 int main(void)
 {
@@ -39,5 +40,6 @@ int main(void)
     test_storage();
     test_dshot_decoder();
     test_silabs_platform();
+    test_trace_replay();
     return 0;
 }
