@@ -17,6 +17,7 @@ void test_protection(void);
 void test_storage(void);
 void test_dshot_decoder(void);
 void test_tx_programming(void);
+void test_bootloader_api(void);
 void test_silabs_platform(void);
 void test_trace_replay(void);
 
@@ -41,6 +42,7 @@ int main(void)
     test_storage();
     test_dshot_decoder();
     test_tx_programming();
+    test_bootloader_api();
     test_silabs_platform();
     test_trace_replay();
     return 0;
