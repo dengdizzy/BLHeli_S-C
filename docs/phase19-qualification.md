@@ -7,6 +7,11 @@ The root default build is portable C only. The preserved legacy build is
 available explicitly with `make legacy-reference-build` and is never invoked
 by `make`, `make test`, or `make phase19-check`.
 
+The legacy tree is archived as a read-only reference. Run
+`make legacy-reference-immutable` to verify the tracked files against
+`docs/phase19-legacy.sha256`. If the check fails, restore the archive from its
+approved tag before using it for behavioral comparison.
+
 Run `make phase19-check` only after the following evidence has been completed
 and recorded by the project maintainer:
 

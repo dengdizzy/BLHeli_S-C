@@ -5,7 +5,7 @@ CORE_SOURCES = core/esc_control.c core/throttle_calibration.c core/throttle_inpu
 TEST_SOURCES = tests/test_main.c tests/test_config.c tests/test_throttle_calibration.c tests/test_throttle_input.c tests/test_core_architecture.c tests/test_hal_interface.c tests/test_state_layout.c tests/test_commutation.c tests/test_pwm_control.c tests/test_bemf.c tests/test_zero_crossing.c tests/test_startup.c tests/test_run_control.c tests/test_timing_control.c tests/test_demag.c tests/test_brake.c tests/test_protection.c tests/test_storage.c tests/test_dshot_decoder.c tests/test_silabs_platform.c tests/test_trace_replay.c
 TEST_BINARY = build/blheli_s_core_tests
 
-.PHONY: test check-core legacy-reference-check legacy-reference-build phase19-check phase19-qualified clean
+.PHONY: test check-core legacy-reference-check legacy-reference-immutable legacy-reference-build phase19-check phase19-qualified clean
 
 test: $(TEST_BINARY)
 	$(TEST_BINARY)
@@ -21,6 +21,9 @@ legacy-reference-check:
 	test -f "BLHeli_S SiLabs/BLHeli_S.asm"
 	test -f "BLHeli_S SiLabs/BLHeliPgm.inc"
 	test -f "BLHeli_S SiLabs/BLHeliBootLoad.inc"
+
+legacy-reference-immutable: legacy-reference-check
+	sha256sum -c docs/phase19-legacy.sha256
 
 legacy-reference-build:
 	$(MAKE) -C "BLHeli_S SiLabs" single_target
